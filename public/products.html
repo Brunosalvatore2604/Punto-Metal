@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colección - PuntoMetal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="img/icon.png" alt="PuntoMetal Logo">
+                <h1>PuntoMetal</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="products.html" class="active">Colección</a></li>
+                <li><a href="#about">Nosotros</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="products-hero">
+            <div class="hero-content">
+                <h1>Nuestra Colección</h1>
+                <p>Descubre nuestra selección de joyería fina</p>
+            </div>
+        </section>
+
+        <section id="filters">
+            <div class="filter-container">
+                <div class="filter-category">
+                    <select id="category-filter">
+                        <option value="">Todos los productos</option>
+                        <option value="relojes">Relojes</option>
+                        <option value="cadenas">Cadenas</option>
+                        <option value="anillos">Anillos</option>
+                        <option value="aretes">Aretes</option>
+                    </select>
+                </div>
+                <div class="filter-price">
+                    <label for="price-range">Precio máximo:</label>
+                    <input type="range" id="price-range" min="0" max="10000" value="10000">
+                    <span id="price-value">$10,000</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="products-grid" class="products-container">
+            <!-- Los productos se cargarán dinámicamente -->
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>PuntoMetal</h3>
+                <p>Joyería de Lujo</p>
+            </div>
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="products.html">Colección</a></li>
+                    <li><a href="#about">Nosotros</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 PuntoMetal. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+</body>
+</html>

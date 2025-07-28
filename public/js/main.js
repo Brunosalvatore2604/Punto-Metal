@@ -64,6 +64,22 @@ function handleContactForm(event) {
     event.target.reset();
 }
 
+// Efecto de deslizamiento suave para los enlaces
+document.querySelectorAll('.smooth-scroll').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
 // Animaciones al hacer scroll
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {

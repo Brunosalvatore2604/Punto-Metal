@@ -32,9 +32,20 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Para Railway
-app.get('/health', (req, res) => {
-    res.send('OK');
+// Ruta para productos
+app.get('/products', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'products.html'));
+});
+
+// API de productos
+app.get('/api/products', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM productos');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ error: 'Error al obtener productos' });
+    }
 });
 
 // Ruta de prueba
