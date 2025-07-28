@@ -2,9 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mysql = require('mysql2');
+const path = require('path');
 
 // Configurar dotenv
-dotenv.config();
 
 // Configuración de la conexión a MySQL
 const pool = mysql.createPool({
@@ -24,8 +24,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Redirigir todas las rutas a index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Ruta de prueba
-app.get('/', async (req, res) => {
+app.get('/api', async (req, res) => {
     try {
         res.json({ 
             message: '¡Bienvenido a PuntoMetal API!',
