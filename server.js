@@ -1,9 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const mysql = require('mysql2');
 
 // Configurar dotenv
 dotenv.config();
+
+// Configuración de la conexión a MySQL
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+// Crear una promesa para la conexión
+const db = pool.promise();
 
 const app = express();
 
@@ -13,8 +28,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Ruta de prueba
-app.get('/', (req, res) => {
-    res.json({ message: '¡Bienvenido a PuntoMetal API!' });
+app.get('/', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT NOW() as current_time');
+        res.json({ 
+            message: '¡Bienvenido a PuntoMetal API!',
+            database: {
+                connected: true,
+                current_time: rows[0].current_time
+            }
+        });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        res.status(500).json({ 
+            message: 'Error al conectar a la base de datos',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+        });
+    }
 });
 
 // Manejo de errores
