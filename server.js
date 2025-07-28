@@ -42,7 +42,14 @@ app.get('/', async (req, res) => {
         console.error('Error al conectar a la base de datos:', error);
         res.status(500).json({ 
             message: 'Error al conectar a la base de datos',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+            error: {
+                message: error.message,
+                code: error.code,
+                errno: error.errno,
+                sql: error.sql,
+                sqlState: error.sqlState,
+                sqlMessage: error.sqlMessage
+            }
         });
     }
 });
