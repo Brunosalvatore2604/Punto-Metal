@@ -1,0 +1,9 @@
+{
+  "name": "PuntoMetal",
+  "type": "nodejs",
+  "buildCommand": "npm install",
+  "startCommand": "node server.js",
+  "env": {
+    "PORT": "3000"
+  }
+}
