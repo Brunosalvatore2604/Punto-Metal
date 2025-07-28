@@ -285,6 +285,24 @@ footer {
     color: var(--silver);
 }
 
+/* Estilos para el párrafo de Nuestra Historia */
+#about p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    background: var(--secondary-black);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#about p:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
 /* Filtros */
 #filters {
     background: var(--secondary-black);
