@@ -13,27 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
         filterProducts();
     });
 
-    // Cargar productos desde la API o de la base de datos simulada
+    // Cargar productos desde la base de datos a través de la API
     async function loadProducts() {
         try {
-            // Si hay una API, descomenta este bloque
-            // const response = await fetch('/api/products');
-            // allProducts = await response.json();
+            const response = await fetch('/api/products');
+            if (!response.ok) {
+                throw new Error('Error al cargar los productos');
+            }
+            allProducts = await response.json();
             
-            // Datos de ejemplo (simulando una respuesta de API)
-            allProducts = [
-                { id: 1, nombre: 'Anillo de Oro', precio: 2500, tipo: 'anillo', descripcion: 'Anillo de oro 18k con diseño clásico', imagen_url: 'https://via.placeholder.com/300x300', stock: 5 },
-                { id: 2, nombre: 'Cadena de Plata', precio: 1800, tipo: 'cadena', descripcion: 'Cadena de plata 925 con cierre de seguridad', imagen_url: 'https://via.placeholder.com/300x300', stock: 3 },
-                { id: 3, nombre: 'Reloj de Lujo', precio: 8500, tipo: 'reloj', descripcion: 'Reloj automático con correa de cuero', imagen_url: 'https://via.placeholder.com/300x300', stock: 2 },
-                { id: 4, nombre: 'Aretes de Diamante', precio: 4200, tipo: 'aretes', descripcion: 'Aretes con diamantes auténticos', imagen_url: 'https://via.placeholder.com/300x300', stock: 4 },
-                { id: 5, nombre: 'Brazalete de Oro', precio: 3200, tipo: 'braceletes', descripcion: 'Brazalete ajustable de oro 14k', imagen_url: 'https://via.placeholder.com/300x300', stock: 0 },
-                { id: 6, nombre: 'Anillo de Plata', precio: 1500, tipo: 'anillo', descripcion: 'Anillo de plata 925 con diseño moderno', imagen_url: 'https://via.placeholder.com/300x300', stock: 7 }
-            ];
+            // Actualizar el rango de precios si es necesario
+            if (allProducts.length > 0) {
+                const maxPrice = Math.max(...allProducts.map(p => p.precio));
+                priceRange.max = maxPrice;
+                priceRange.value = maxPrice;
+                priceValue.textContent = `$${maxPrice.toLocaleString()}`;
+            }
             
             filterProducts();
         } catch (error) {
             console.error('Error al cargar productos:', error);
-            productsContainer.innerHTML = '<p class="error-message">Error al cargar los productos. Por favor, inténtalo de nuevo más tarde.</p>';
+            productsContainer.innerHTML = `
+                <div class="error-message">
+                    <p>Error al cargar los productos. Por favor, inténtalo de nuevo más tarde.</p>
+                    <p>${error.message}</p>
+                </div>`;
         }
     }
 
