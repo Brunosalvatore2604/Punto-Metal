@@ -479,9 +479,11 @@ footer {
     
     /* Hero */
     #hero {
-        padding-top: 180px;
+        padding-top: 100px;
         height: auto;
-        min-height: 100vh;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
     }
     
     .hero-content h1 {
