@@ -27,13 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 // Ruta de prueba
 app.get('/', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT NOW() as current_time');
         res.json({ 
             message: '¡Bienvenido a PuntoMetal API!',
-            database: {
-                connected: true,
-                current_time: rows[0].current_time
-            }
         });
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
