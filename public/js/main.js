@@ -5,6 +5,9 @@ let cart = [];
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
     
+    // Cargar productos destacados
+    loadFeaturedProducts();
+    
     // Event listeners para los botones de "Agregar al Carrito"
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', addToCart);
@@ -16,6 +19,34 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.addEventListener('submit', handleContactForm);
     }
 });
+
+// Cargar productos destacados
+async function loadFeaturedProducts() {
+    try {
+        const response = await fetch('/api/products/featured');
+        const products = await response.json();
+        displayFeaturedProducts(products);
+    } catch (error) {
+        console.error('Error al cargar productos destacados:', error);
+    }
+}
+
+// Mostrar productos destacados
+function displayFeaturedProducts(products) {
+    const featuredContainer = document.querySelector('.product-grid');
+    if (!featuredContainer) return;
+
+    featuredContainer.innerHTML = products.map(product => `
+        <div class="product-card">
+            <img src="${product.imagen_url}" alt="${product.nombre}">
+            <h3>${product.nombre}</h3>
+            <p>$${product.precio.toLocaleString()}</p>
+            <button class="add-to-cart" onclick="addToCart('${product.id}')">
+                ${product.stock > 0 ? 'Agregar al Carrito' : 'Agotado'}
+            </button>
+        </div>
+    `).join('');
+}
 
 function addToCart(event) {
     const productCard = event.target.closest('.product-card');

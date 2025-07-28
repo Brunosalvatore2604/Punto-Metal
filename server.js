@@ -48,6 +48,29 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
+// Endpoint para productos destacados
+app.get('/api/products/featured', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM productos WHERE destacado = TRUE LIMIT 3');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener productos destacados:', error);
+        res.status(500).json({ error: 'Error al obtener productos destacados' });
+    }
+});
+
+// Endpoint para productos filtrados por tipo
+app.get('/api/products/type/:type', async (req, res) => {
+    try {
+        const type = req.params.type;
+        const [rows] = await db.query('SELECT * FROM productos WHERE tipo = ?', [type]);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al filtrar productos por tipo:', error);
+        res.status(500).json({ error: 'Error al filtrar productos' });
+    }
+});
+
 // Ruta de prueba
 app.get('/api', async (req, res) => {
     try {
