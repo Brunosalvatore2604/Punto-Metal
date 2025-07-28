@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productsContainer = document.getElementById('products-grid');
-    const categoryFilter = document.getElementById('category-filter');
+    const typeFilter = document.getElementById('category-filter');
     const priceRange = document.getElementById('price-range');
     const priceValue = document.getElementById('price-value');
+    const categoryOptions = ['anillo', 'cadena', 'reloj', 'aretes', 'braceletes'];
 
     // Actualizar el valor mostrado del rango de precio
     priceRange.addEventListener('input', () => {
@@ -24,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mostrar productos en la página
     function displayProducts(products) {
         const filteredProducts = products.filter(product => {
-            const categoryMatch = !categoryFilter.value || product.categoria === categoryFilter.value;
+            const typeMatch = !typeFilter.value || categoryOptions.includes(product.tipo.toLowerCase());
             const priceMatch = product.precio <= parseInt(priceRange.value);
-            return categoryMatch && priceMatch;
+            return typeMatch && priceMatch;
         });
 
         productsContainer.innerHTML = filteredProducts.map(product => `
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3>${product.nombre}</h3>
                     <p class="product-price">$${product.precio.toLocaleString()}</p>
                     <p class="product-description">${product.descripcion}</p>
+                    <div class="product-type">${product.tipo}</div>
                     <div class="product-details">
                         <span class="stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
                             ${product.stock > 0 ? 'En stock' : 'Agotado'}
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Manejar filtros
-    categoryFilter.addEventListener('change', () => loadProducts());
+    typeFilter.addEventListener('change', () => loadProducts());
     priceRange.addEventListener('change', () => loadProducts());
 
     // Inicializar
