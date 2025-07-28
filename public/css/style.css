@@ -682,7 +682,9 @@ footer {
 
 .social-links {
     display: flex;
-    gap: 1rem;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
 }
 
 .social-links a {
