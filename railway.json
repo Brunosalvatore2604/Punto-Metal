@@ -4,6 +4,10 @@
   "buildCommand": "npm install",
   "startCommand": "node server.js",
   "env": {
-    "PORT": "3000"
+    "PORT": "${PORT}"
+  },
+  "healthCheck": {
+    "path": "/health",
+    "interval": 30
   }
 }

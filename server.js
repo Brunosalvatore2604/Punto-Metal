@@ -27,9 +27,14 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Redirigir todas las rutas a index.html
-app.get('*', (req, res) => {
+// Redirigir a index.html
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Para Railway
+app.get('/health', (req, res) => {
+    res.send('OK');
 });
 
 // Ruta de prueba
