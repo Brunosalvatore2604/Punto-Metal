@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
     console.log('Conectado a la base de datos');
 
     const dropTableSQL = `DROP TABLE IF EXISTS productos`;
-    await db.execute(dropTableSQL);
+    db.execute(dropTableSQL);
     console.log('Tabla productos eliminada (si existía)');
 
     const createTableSQL = `
@@ -52,7 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
         destacado BOOLEAN DEFAULT FALSE
       )
     `;
-    await db.execute(createTableSQL);
+    db.execute(createTableSQL);
      console.log('Tabla productos creada exitosamente');
      const insertSQL = `
       INSERT INTO productos (nombre, descripcion, precio, stock, tipo, imagen, destacado)
@@ -63,7 +63,7 @@ app.use(express.static(path.join(__dirname, 'public')));
         ('Aretes de Perla', 'Aretes pequeños con perlas auténticas', 1500.00, 12, 'aretes', 'https://img.kwcdn.com/product/fancy/0dd56ef3-a19d-4938-98cf-70fab76897c3.jpg?imageView2/2/w/800/q/70/format/webp', false),
         ('Brazalete de Cuero', 'Brazalete moderno de cuero negro', 980.00, 15, 'brasaletes', 'https://img.kwcdn.com/product/fancy/d4b4420d-412c-4bc8-8614-40c0dbb39f98.jpg?imageView2/2/w/800/q/70/format/webp', true)
     `;
-    await connection.execute(insertSQL);
+    db.execute(insertSQL);
     console.log('Datos de ejemplo insertados en productos');
     
   } catch (error) {
