@@ -69,7 +69,7 @@ app.use(express.static(path.join(__dirname, 'public')));
   } catch (error) {
     console.error('Error:', error);
   } 
-}
+
 
 // Redirigir a index.html
 app.get('/', (req, res) => {
