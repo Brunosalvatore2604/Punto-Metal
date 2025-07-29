@@ -27,6 +27,50 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+ try {
+    console.log('Conectado a la base de datos');
+
+    const dropTableSQL = `DROP TABLE IF EXISTS productos`;
+    await db.execute(dropTableSQL);
+    console.log('Tabla productos eliminada (si existía)');
+
+    const createTableSQL = `
+      CREATE TABLE productos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        descripcion TEXT,
+        precio DECIMAL(10,2) NOT NULL,
+        stock INT NOT NULL,
+        tipo ENUM(
+          'anillos',
+          'cadenas',
+          'relojes',
+          'aretes',
+          'brasaletes'
+        ) NOT NULL,
+        imagen_url VARCHAR(255),
+        destacado BOOLEAN DEFAULT FALSE
+      )
+    `;
+    await db.execute(createTableSQL);
+     console.log('Tabla productos creada exitosamente');
+     const insertSQL = `
+      INSERT INTO productos (nombre, descripcion, precio, stock, tipo, imagen, destacado)
+      VALUES 
+        ('Anillo de Plata', 'Anillo elegante de plata 925', 1200.00, 10, 'anillos', 'https://img.kwcdn.com/product/fancy/3579c08d-165f-4666-ae9a-1b2f1071f81d.jpg?imageView2/2/w/800/q/70/format/webp', true),
+        ('Cadena de Oro', 'Cadena fina de oro 18k', 5600.50, 5, 'cadenas', 'https://img.kwcdn.com/product/open/2024-09-05/1725520740131-23248e8fae114a8a9b4e1cabb5b6c22d-goods.jpeg?imageView2/2/w/800/q/70/format/webp', true),
+        ('Reloj Clásico', 'Reloj analógico con correa de cuero', 2400.00, 8, 'relojes', 'https://img.kwcdn.com/product/fancy/e3a4b6d8-738a-4fa9-bd17-a844212dc913.jpg?imageView2/2/w/800/q/70/format/webp', false),
+        ('Aretes de Perla', 'Aretes pequeños con perlas auténticas', 1500.00, 12, 'aretes', 'https://img.kwcdn.com/product/fancy/0dd56ef3-a19d-4938-98cf-70fab76897c3.jpg?imageView2/2/w/800/q/70/format/webp', false),
+        ('Brazalete de Cuero', 'Brazalete moderno de cuero negro', 980.00, 15, 'brasaletes', 'https://img.kwcdn.com/product/fancy/d4b4420d-412c-4bc8-8614-40c0dbb39f98.jpg?imageView2/2/w/800/q/70/format/webp', true)
+    `;
+    await connection.execute(insertSQL);
+    console.log('Datos de ejemplo insertados en productos');
+    
+  } catch (error) {
+    console.error('Error:', error);
+  } 
+}
+
 // Redirigir a index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
