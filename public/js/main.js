@@ -41,9 +41,6 @@ function displayFeaturedProducts(products) {
             <img src="${product.imagen_url}" alt="${product.nombre}">
             <h3>${product.nombre}</h3>
             <p>$${product.precio.toLocaleString()}</p>
-            <button class="add-to-cart" onclick="addToCart('${product.id}')">
-                ${product.stock > 0 ? 'Agregar al Carrito' : 'Agotado'}
-            </button>
         </div>
     `).join('');
 }
