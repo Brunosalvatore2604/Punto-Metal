@@ -1,11 +1,29 @@
+
+// Carrito de compras
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let allProducts = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const productsContainer = document.getElementById('products-grid');
     const typeFilter = document.getElementById('category-filter');
     const priceRange = document.getElementById('price-range');
     const priceValue = document.getElementById('price-value');
-    
-    // Base de datos de productos (simulada)
-    let allProducts = [];
+    const cartIcon = document.getElementById('cartIcon');
+    const cartDropdown = document.getElementById('cartDropdown');
+    const cartCount = document.getElementById('cartCount');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+
+    // Mostrar/ocultar el carrito desplegable
+    cartIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cartDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+        if (!cartDropdown.contains(e.target) && !cartIcon.contains(e.target)) {
+            cartDropdown.classList.remove('show');
+        }
+    });
 
     // Actualizar el valor mostrado del rango de precio
     priceRange.addEventListener('input', () => {
@@ -21,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error al cargar los productos');
             }
             allProducts = await response.json();
-            
             // Actualizar el rango de precios si es necesario
             if (allProducts.length > 0) {
                 const maxPrice = Math.max(...allProducts.map(p => p.precio));
@@ -29,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceRange.value = maxPrice;
                 priceValue.textContent = `$${maxPrice.toLocaleString()}`;
             }
-            
             filterProducts();
         } catch (error) {
             console.error('Error al cargar productos:', error);
@@ -45,13 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterProducts() {
         const selectedCategory = typeFilter.value;
         const maxPrice = parseInt(priceRange.value);
-        
         const filteredProducts = allProducts.filter(product => {
             const matchesCategory = !selectedCategory || product.tipo === selectedCategory;
             const matchesPrice = product.precio <= maxPrice;
             return matchesCategory && matchesPrice;
         });
-        
         displayProducts(filteredProducts);
     }
 
@@ -61,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productsContainer.innerHTML = '<p class="no-results">No se encontraron productos que coincidan con los filtros seleccionados.</p>';
             return;
         }
-
         productsContainer.innerHTML = products.map(product => `
             <div class="product-card">
                 <img src="${product.imagen_url}" alt="${product.nombre}">
@@ -74,13 +87,81 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
                             ${product.stock > 0 ? 'En stock' : 'Agotado'}
                         </span>
-                        <button class="add-to-cart" onclick="addToCart('${product.id}')">
+                        <button class="add-to-cart" data-id="${product.id}" ${product.stock === 0 ? 'disabled' : ''}>
                             ${product.stock > 0 ? 'Agregar al Carrito' : 'Notificar cuando esté disponible'}
                         </button>
                     </div>
                 </div>
             </div>
         `).join('');
+
+        // Asignar eventos a los botones de agregar al carrito
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                addToCart(id);
+            });
+        });
+    }
+
+    // Actualizar el contador y el contenido del carrito
+    function updateCartUI() {
+        cartCount.textContent = cart.length;
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<div style="text-align:center;color:#aaa;">El carrito está vacío</div>';
+            cartTotal.textContent = 'Total: $0';
+            return;
+        }
+        let total = 0;
+        cartItems.innerHTML = cart.map((item, idx) => {
+            total += item.precio;
+            return `
+                <div class="cart-item">
+                    <img src="${item.imagen_url}" class="cart-item-img" alt="${item.nombre}">
+                    <div class="cart-item-info">
+                        <span class="cart-item-title">${item.nombre}</span>
+                        <span class="cart-item-price">$${item.precio.toLocaleString()}</span>
+                    </div>
+                    <button class="cart-item-remove" data-idx="${idx}" title="Quitar del carrito">&times;</button>
+                </div>
+            `;
+        }).join('');
+        cartTotal.textContent = `Total: $${total.toLocaleString()}`;
+        // Quitar producto del carrito
+        document.querySelectorAll('.cart-item-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                cart.splice(idx, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartUI();
+            });
+        });
+    }
+
+    // Agregar producto al carrito
+    function addToCart(productId) {
+        const product = allProducts.find(p => p.id == productId);
+        if (!product) return;
+        cart.push({
+            id: product.id,
+            nombre: product.nombre,
+            precio: product.precio,
+            imagen_url: product.imagen_url
+        });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartUI();
+        showNotification('Producto agregado al carrito');
+    }
+
+    // Notificación simple
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
     }
 
     // Manejar cambios en los filtros
@@ -89,10 +170,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar
     loadProducts();
+    updateCartUI();
 });
-
-// Función para agregar al carrito (implementar la lógica del carrito)
-function addToCart(productId) {
-    // Aquí iría la lógica para agregar al carrito
-    console.log('Agregando producto:', productId);
-}
