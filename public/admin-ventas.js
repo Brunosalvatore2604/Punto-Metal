@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function handleLogout() {
         localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login.html';
+        window.location.href = '/login.html';
     }
     // Inicializar
     loadProductos().then(loadVentas);
