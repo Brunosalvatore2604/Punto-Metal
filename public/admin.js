@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle logout
     function handleLogout() {
         localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login.html';
+        window.location.href = '/login.html';
     }
 
     // Handle unauthorized access
