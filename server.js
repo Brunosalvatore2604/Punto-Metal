@@ -242,7 +242,12 @@ app.delete('/api/admin/products/:id', authenticateToken, async (req, res) => {
 app.get('/api/admin/ventas', authenticateToken, async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM ventas');
-        res.json(rows);
+        // Formatear fecha_venta a YYYY-MM-DD
+        const ventas = rows.map(v => ({
+            ...v,
+            fecha_venta: v.fecha_venta instanceof Date ? v.fecha_venta.toISOString().slice(0, 10) : (v.fecha_venta ? v.fecha_venta.toString().slice(0, 10) : v.fecha_venta)
+        }));
+        res.json(ventas);
     } catch (error) {
         console.error('Error al obtener ventas:', error);
         res.status(500).json({ error: 'Error al obtener ventas' });
@@ -256,7 +261,9 @@ app.get('/api/admin/ventas/:id', authenticateToken, async (req, res) => {
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Venta no encontrada' });
         }
-        res.json(rows[0]);
+        const venta = rows[0];
+        venta.fecha_venta = venta.fecha_venta instanceof Date ? venta.fecha_venta.toISOString().slice(0, 10) : (venta.fecha_venta ? venta.fecha_venta.toString().slice(0, 10) : venta.fecha_venta);
+        res.json(venta);
     } catch (error) {
         console.error('Error al obtener la venta:', error);
         res.status(500).json({ error: 'Error al obtener la venta' });
@@ -271,8 +278,10 @@ app.post('/api/admin/ventas', authenticateToken, async (req, res) => {
             'INSERT INTO ventas (producto_id, cantidad, precio_unitario, fecha_venta) VALUES (?, ?, ?, ?)',
             [producto_id, cantidad, precio_unitario, fecha_venta]
         );
-        const [newVenta] = await db.query('SELECT * FROM ventas WHERE id = ?', [result.insertId]);
-        res.status(201).json(newVenta[0]);
+        const [newVentaRows] = await db.query('SELECT * FROM ventas WHERE id = ?', [result.insertId]);
+        let newVenta = newVentaRows[0];
+        newVenta.fecha_venta = newVenta.fecha_venta instanceof Date ? newVenta.fecha_venta.toISOString().slice(0, 10) : (newVenta.fecha_venta ? newVenta.fecha_venta.toString().slice(0, 10) : newVenta.fecha_venta);
+        res.status(201).json(newVenta);
     } catch (error) {
         console.error('Error al crear la venta:', error);
         res.status(500).json({ error: 'Error al crear la venta' });
@@ -287,11 +296,13 @@ app.put('/api/admin/ventas/:id', authenticateToken, async (req, res) => {
             'UPDATE ventas SET producto_id = ?, cantidad = ?, precio_unitario = ?, fecha_venta = ? WHERE id = ?',
             [producto_id, cantidad, precio_unitario, fecha_venta, req.params.id]
         );
-        const [updatedVenta] = await db.query('SELECT * FROM ventas WHERE id = ?', [req.params.id]);
-        if (updatedVenta.length === 0) {
+        const [updatedVentaRows] = await db.query('SELECT * FROM ventas WHERE id = ?', [req.params.id]);
+        if (updatedVentaRows.length === 0) {
             return res.status(404).json({ error: 'Venta no encontrada' });
         }
-        res.json(updatedVenta[0]);
+        let updatedVenta = updatedVentaRows[0];
+        updatedVenta.fecha_venta = updatedVenta.fecha_venta instanceof Date ? updatedVenta.fecha_venta.toISOString().slice(0, 10) : (updatedVenta.fecha_venta ? updatedVenta.fecha_venta.toString().slice(0, 10) : updatedVenta.fecha_venta);
+        res.json(updatedVenta);
     } catch (error) {
         console.error('Error al actualizar la venta:', error);
         res.status(500).json({ error: 'Error al actualizar la venta' });
