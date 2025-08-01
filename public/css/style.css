@@ -359,6 +359,10 @@ body {
     text-align: center;
 }
 
+.about-content h2{
+    margin-bottom: 2rem;
+}
+
 /* Contact Section */
 #contact {
     padding: 5rem 10%;
