@@ -19,24 +19,6 @@ const pool = mysql.createPool({
 // Crear una promesa para la conexión
 const db = pool.promise();
 
-// Crear tabla ventas (DROP y CREATE) al iniciar el servidor
-(async () => {
-    try {
-        await db.query('DROP TABLE IF EXISTS ventas');
-        await db.query(`CREATE TABLE ventas (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            producto_id INT NOT NULL,
-            cantidad INT NOT NULL,
-            precio_unitario DECIMAL(10,2) NOT NULL,
-            fecha_venta DATE NOT NULL,
-            FOREIGN KEY (producto_id) REFERENCES productos(id)
-        )`);
-        console.log('Tabla ventas creada correctamente.');
-    } catch (err) {
-        console.error('Error creando tabla ventas:', err);
-    }
-})();
-
 const app = express();
 
 // Middleware
