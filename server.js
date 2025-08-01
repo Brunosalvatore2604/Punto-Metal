@@ -1,3 +1,77 @@
+// --- API de ventas (CRUD) ---
+// Obtener todas las ventas
+app.get('/api/admin/ventas', authenticateToken, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM ventas');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener ventas:', error);
+        res.status(500).json({ error: 'Error al obtener ventas' });
+    }
+});
+
+// Obtener una venta por ID
+app.get('/api/admin/ventas/:id', authenticateToken, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM ventas WHERE id = ?', [req.params.id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Venta no encontrada' });
+        }
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al obtener la venta:', error);
+        res.status(500).json({ error: 'Error al obtener la venta' });
+    }
+});
+
+// Crear una venta
+app.post('/api/admin/ventas', authenticateToken, async (req, res) => {
+    const { producto_id, cantidad, precio_unitario, fecha_venta } = req.body;
+    try {
+        const [result] = await db.query(
+            'INSERT INTO ventas (producto_id, cantidad, precio_unitario, fecha_venta) VALUES (?, ?, ?, ?)',
+            [producto_id, cantidad, precio_unitario, fecha_venta]
+        );
+        const [newVenta] = await db.query('SELECT * FROM ventas WHERE id = ?', [result.insertId]);
+        res.status(201).json(newVenta[0]);
+    } catch (error) {
+        console.error('Error al crear la venta:', error);
+        res.status(500).json({ error: 'Error al crear la venta' });
+    }
+});
+
+// Actualizar una venta
+app.put('/api/admin/ventas/:id', authenticateToken, async (req, res) => {
+    const { producto_id, cantidad, precio_unitario, fecha_venta } = req.body;
+    try {
+        await db.query(
+            'UPDATE ventas SET producto_id = ?, cantidad = ?, precio_unitario = ?, fecha_venta = ? WHERE id = ?',
+            [producto_id, cantidad, precio_unitario, fecha_venta, req.params.id]
+        );
+        const [updatedVenta] = await db.query('SELECT * FROM ventas WHERE id = ?', [req.params.id]);
+        if (updatedVenta.length === 0) {
+            return res.status(404).json({ error: 'Venta no encontrada' });
+        }
+        res.json(updatedVenta[0]);
+    } catch (error) {
+        console.error('Error al actualizar la venta:', error);
+        res.status(500).json({ error: 'Error al actualizar la venta' });
+    }
+});
+
+// Eliminar una venta
+app.delete('/api/admin/ventas/:id', authenticateToken, async (req, res) => {
+    try {
+        const [result] = await db.query('DELETE FROM ventas WHERE id = ?', [req.params.id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Venta no encontrada' });
+        }
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error al eliminar la venta:', error);
+        res.status(500).json({ error: 'Error al eliminar la venta' });
+    }
+});
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -17,6 +91,24 @@ const pool = mysql.createPool({
 
 // Crear una promesa para la conexión
 const db = pool.promise();
+
+// Crear tabla ventas (DROP y CREATE) al iniciar el servidor
+(async () => {
+    try {
+        await db.query('DROP TABLE IF EXISTS ventas');
+        await db.query(`CREATE TABLE ventas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            producto_id INT NOT NULL,
+            cantidad INT NOT NULL,
+            precio_unitario DECIMAL(10,2) NOT NULL,
+            fecha_venta DATE NOT NULL,
+            FOREIGN KEY (producto_id) REFERENCES productos(id)
+        )`);
+        console.log('Tabla ventas creada correctamente.');
+    } catch (err) {
+        console.error('Error creando tabla ventas:', err);
+    }
+})();
 
 const app = express();
 
