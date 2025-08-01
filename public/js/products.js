@@ -114,13 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         let total = 0;
         cartItems.innerHTML = cart.map((item, idx) => {
-            total += item.precio;
+            // Asegurarse de que el precio sea un número
+            const precioNum = typeof item.precio === 'string' ? parseFloat(item.precio) : item.precio;
+            total += isNaN(precioNum) ? 0 : precioNum;
             return `
                 <div class="cart-item">
                     <img src="${item.imagen_url}" class="cart-item-img" alt="${item.nombre}">
                     <div class="cart-item-info">
                         <span class="cart-item-title">${item.nombre}</span>
-                        <span class="cart-item-price">$${item.precio.toLocaleString()}</span>
+                        <span class="cart-item-price">$${precioNum.toLocaleString()}</span>
                     </div>
                     <button class="cart-item-remove" data-idx="${idx}" title="Quitar del carrito">&times;</button>
                 </div>
@@ -135,6 +137,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('cart', JSON.stringify(cart));
                 updateCartUI();
             });
+        });
+        // Habilitar finalizar compra
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        if (checkoutBtn) checkoutBtn.disabled = false;
+    }
+
+    // Acción de finalizar compra por WhatsApp
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) return;
+            let mensaje = '¡Hola! Quisiera consultar la disponibilidad de los siguientes productos:%0A';
+            cart.forEach((item, idx) => {
+                mensaje += `%0A${idx + 1}. ${item.nombre} - $${(typeof item.precio === 'string' ? parseFloat(item.precio) : item.precio).toLocaleString()}`;
+            });
+            let total = cart.reduce((acc, item) => acc + (typeof item.precio === 'string' ? parseFloat(item.precio) : item.precio), 0);
+            mensaje += `%0A%0ATotal: $${total.toLocaleString()}`;
+            mensaje += `%0A%0A¿Están disponibles? ¡Gracias!`;
+            // Número del vendedor (cambiar si es necesario)
+            const numero = '59891821275';
+            const url = `https://wa.me/${numero}?text=${mensaje}`;
+            window.open(url, '_blank');
         });
     }
 
